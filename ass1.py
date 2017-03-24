@@ -3,6 +3,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 import csv
 
+HEADER = ["Sex",
+	"Length",
+	"Diameter",
+	"Height",
+	"Whole weight",
+	"Shucked weight",
+	"Viscera weight",
+	"Shell weight",
+	"Rings"]
+
 def preprocess_data(filename):
     '''
     opens the file given by String 'filename' returns a dataset
@@ -10,7 +20,7 @@ def preprocess_data(filename):
     '''
     print("Reading in: {}".format(filename))
 
-    raw = pd.read_csv(filename)
+    raw = pd.read_csv(filename, names=HEADER)
     raw.dropna(how='any')   # removes any instances with missing data (if any)
 
     return raw
