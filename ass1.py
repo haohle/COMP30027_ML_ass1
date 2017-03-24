@@ -17,11 +17,19 @@ def preprocess_data(filename):
 
 def compare_instance(instance1, instance2, method):
     '''
-    returns a score based on calculating the similarity (or distane) between two
-    given instances according to the similarity (or distance) metric defined by
-    the string method specify the values that method
+    arguments:
+    	instance1: iterable, one of the instances to be compared
+    	instance2: iterable, another of the instances to be compared
+    	method: 
+    returns: a score based on calculating the similarity (or distane) between
+    	two given instances according to the similarity (or distance) metric
+    	defined by the string method specify the values that method
     '''
-    pass
+    method_func = globals().get(method)
+    if not method_func:
+    	raise NotImplementedError(
+    		"Method {} not implemented".format(method))
+    return method_func(instance1, instance2)
 
 def get_neighbours(instance, training_data_set, k, methd):
     '''
@@ -48,6 +56,4 @@ def evaluate(data_set, metric):
     pass
 
 if __name__ == "__main__":
-    '''
-    '''
-    pass
+	pass
