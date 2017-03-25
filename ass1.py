@@ -29,7 +29,9 @@ def preprocess_data(filename):
     raw = pd.read_csv(filename, names=HEADER)
     raw.dropna(how='any')   # removes any instances with missing data (if any)
 
-    return raw
+    df = pd.DataFrame(raw)  # converts the raw csv into a dataframe
+
+    return df
 
 def compare_instance(instance1, instance2, method):
     '''
@@ -47,11 +49,18 @@ def compare_instance(instance1, instance2, method):
     		"Method {} not implemented".format(method))
     return method_func(instance1, instance2)
 
-def get_neighbours(instance, training_data_set, k, methd):
+def get_neighbours(instance, training_data_set, k, method):
     '''
     return a list of (class, score) 2-tuples for each of the k best neighbours 
     for the given instnace from the test data set based on all of the instances
-    from the test data set
+    from the test data set.
+    arguments:
+        instance: the instance we are trying to classify
+        training_data_set: data set which will be fed to the instance
+        method: the voting similarity (distance) methods used
+    returns:
+        list of (class, score) 2-tuples for each of the k best neighbours for
+        the given instance
     '''
     pass
 
@@ -60,6 +69,12 @@ def predict_class(neighbours, method):
     '''
     return a predicted class label according to the given neighbours defined
     by a list of (class, score) 2-tuples & chosen voting methods
+    arguments:
+        neighbours: list of (class, score) 2-tuples for each of the best
+                    neighbours for the given instance
+        method: voting method to predict the class of the given instance
+    returns:
+        a predicted class label
     '''
     pass
 
@@ -116,4 +131,5 @@ def majority_voting(neighbours):
     return max(set(neighbours), key=neighbours.count)
 
 if __name__ == "__main__":
-	pass
+    #pass
+    df = preprocess_data('/data/abalone.data')
