@@ -115,6 +115,22 @@ def cosine_similarity(instance1, instance2):
     return np.dot(instance1, instance2) / \
         (np.linalg.norm(instance1) * np.linalg.norm(instance2))
 
+def majority_voting(neighbours):
+    '''
+    Calculates the majority (if any) of classes from the given neighbours
+    arguments:
+        neighbours: is a list of (class, scores) 2-tuples. only need to make
+                    use of class for this voting method
+    return: a string with the class name for the majority found in the list
+            of neighbours
+    '''
+    # only need the class labels, not the score for majority voting
+    # will therefore ignore the scores all together
+    classLabels = [i[0] for i in neighbours]
+
+    # as a draw will never occue if we only use odd values for k
+    return max(set(classLabels), key=classLabels.count)
+
 def inverse_linear_distance(distances):
     '''
     This is a method for weighted_majority
