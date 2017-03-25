@@ -12,6 +12,12 @@ HEADER = ["Sex",
 	"Viscera weight",
 	"Shell weight",
 	"Rings"]
+SEX2NUM = {
+    "M": 1,
+    "F": 2,
+    "I": 3,
+}
+
 
 def preprocess_data(filename):
     '''
@@ -64,6 +70,28 @@ def evaluate(data_set, metric):
     strategy
     '''
     pass
+
+def cosine_similarity(instance1, instance2):
+    '''
+    Find the similarity by using cosine similarity
+    nominal data here will be assigned to 1, 2, 3
+    arguments:
+        instance1: iterable, one of the instances to be compared
+        instance2: iterable, another of the instances to be compared
+    return: the cosine of the angle between the vector of instance 1 and 2
+    '''
+    instance1 = (SEX2NUM[instance1[0]],) + instance1[1:]
+    instance2 = (SEX2NUM[instance2[0]],) + instance2[1:]
+    sqlength1 = 0
+    sqlength2 = 0
+    numerator = 0
+    for i in range(len(instance1)):
+        numerator += instance1[i] * instance2[i]
+        sqlength1 += instance1[i] ** 2
+        sqlength2 += instance2[i] ** 2
+    # ** 0.5 is sqrt
+    denominator = (sqlength1 ** 0.5) * (sqlength1 ** 0.5)
+    return numerator / denominator
 
 if __name__ == "__main__":
 	pass
