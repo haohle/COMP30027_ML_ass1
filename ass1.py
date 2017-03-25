@@ -53,7 +53,14 @@ def get_neighbours(instance, training_data_set, k, method):
     '''
     return a list of (class, score) 2-tuples for each of the k best neighbours 
     for the given instnace from the test data set based on all of the instances
-    from the test data set
+    from the test data set.
+    arguments:
+        instance: the instance we are trying to classify
+        training_data_set: data set which will be fed to the instance
+        method: the voting similarity (distance) methods used
+    returns:
+        list of (class, score) 2-tuples for each of the k best neighbours for
+        the given instance
     '''
     pass
 
@@ -62,6 +69,12 @@ def predict_class(neighbours, method):
     '''
     return a predicted class label according to the given neighbours defined
     by a list of (class, score) 2-tuples & chosen voting methods
+    arguments:
+        neighbours: list of (class, score) 2-tuples for each of the best
+                    neighbours for the given instance
+        method: voting method to predict the class of the given instance
+    returns:
+        a predicted class label
     '''
     pass
 
