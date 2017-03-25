@@ -176,7 +176,7 @@ def weighted_majority(neighbours,
     # start counting up for classes now
     class_counts = dd(float)
     for i in range(len(neighbours)):
-        class_counts[neighbours[i][-1]] += weights[i]
+        class_counts[neighbours[i][0]] += weights[i]
 
     # after counting up, find the most counted class
     max_count = -1
