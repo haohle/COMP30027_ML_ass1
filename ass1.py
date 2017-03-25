@@ -80,8 +80,9 @@ def cosine_similarity(instance1, instance2):
         instance2: iterable, another of the instances to be compared
     return: the cosine of the angle between the vector of instance 1 and 2
     '''
-    instance1 = np.array((SEX2NUM[instance1[0]],) + instance1[1:])
-    instance2 = np.array((SEX2NUM[instance2[0]],) + instance2[1:])
+    # exclude the last item in the vector as it is the class
+    instance1 = np.array((SEX2NUM[instance1[0]],) + instance1[1:-1])
+    instance2 = np.array((SEX2NUM[instance2[0]],) + instance2[1:-1])
     return np.dot(instance1, instance2) / \
         (np.linalg.norm(instance1) * np.linalg.norm(instance2))
 
