@@ -29,7 +29,9 @@ def preprocess_data(filename):
     raw = pd.read_csv(filename, names=HEADER)
     raw.dropna(how='any')   # removes any instances with missing data (if any)
 
-    return raw
+    df = pd.DataFrame(raw)  # converts the raw csv into a dataframe
+
+    return df
 
 def compare_instance(instance1, instance2, method):
     '''
@@ -100,4 +102,5 @@ def cosine_similarity(instance1, instance2):
         (np.linalg.norm(instance1) * np.linalg.norm(instance2))
 
 if __name__ == "__main__":
-	pass
+    #pass
+    df = preprocess_data('/data/abalone.data')
