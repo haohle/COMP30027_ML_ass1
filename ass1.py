@@ -49,7 +49,7 @@ def compare_instance(instance1, instance2, method):
     		"Method {} not implemented".format(method))
     return method_func(instance1, instance2)
 
-def get_neighbours(instance, training_data_set, k, methd):
+def get_neighbours(instance, training_data_set, k, method):
     '''
     return a list of (class, score) 2-tuples for each of the k best neighbours 
     for the given instnace from the test data set based on all of the instances
