@@ -125,7 +125,7 @@ def majority_voting(neighbours):
     '''
     # only need the class labels, not the score for majority voting
     # will therefore ignore the scores all together
-    classLabels = [int(i[0]) for i in neighbours]
+    classLabels = [i[0] for i in neighbours]
 
     # as a draw will never occue if we only use odd values for k
     return max(set(classLabels), key=classLabels.count)
