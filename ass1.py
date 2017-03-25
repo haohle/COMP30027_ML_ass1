@@ -71,6 +71,20 @@ def evaluate(data_set, metric):
     '''
     pass
 
+def euclidean_distance(instance1, instance2):
+    '''
+    Find the similarity (distance) by using euclidean distance.
+    Nominal data will be assigned to 1, 2, 3 (this is prevalent for the Sex 
+    attribute).
+    arguments:
+        instance1: iterable, one of the instances to be compared
+        instance2: iterable, another of the instances to be comapred
+    returned: the euclidean distance between the vector of instance 1 and 2
+    '''
+    instnace1 = np.array((SEX2NUM[instance1[0]],) + instance1[1:])
+    instnace1 = np.array((SEX2NUM[instance2[0]],) + instance2[1:])
+    return np.linalg.norm(instnace1 - instance2)
+
 def cosine_similarity(instance1, instance2):
     '''
     Find the similarity by using cosine similarity
