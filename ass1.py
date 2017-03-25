@@ -128,7 +128,7 @@ def majority_voting(neighbours):
     classLabels = [int(i[0]) for i in neighbours]
 
     # as a draw will never occue if we only use odd values for k
-    return max(set(neighbours), key=neighbours.count)
+    return max(set(classLabels), key=classLabels.count)
 
 if __name__ == "__main__":
     #pass
