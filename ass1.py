@@ -250,9 +250,21 @@ def precision(actual_classes, predicted_classes):
         actual_classes: list of classes of the actual value, supervised learning
         prediced_classes: list of predicted classes, order as actual_classes
     return:
-        float that represent the precision
+        dict:
+            key: class
+            value: float that represent the precision
     '''
-    pass
+    predicted_count = dd(int)
+    tp_count = dd(int)
+    length = len(actual_classes)
+    for i in range(length):
+        predicted_count[predicted_classes[i]] += 1
+        if(predicted_classes[i] == actual_classes[i]):
+            tp_count[predicted_classes[i]] += 1
+    result = {}
+    for label in predicted_count:
+        result[label] = tp_count[label] / predicted_count[label]
+    return result
 
 if __name__ == "__main__":
     #pass
