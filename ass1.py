@@ -243,6 +243,17 @@ def weighted_majority(neighbours,
     
     return pred_class
 
+def precision(actual_classes, predicted_classes):
+    '''
+    Find the precision of the model
+    arguments:
+        actual_classes: list of classes of the actual value, supervised learning
+        prediced_classes: list of predicted classes, order as actual_classes
+    return:
+        float that represent the precision
+    '''
+    pass
+
 if __name__ == "__main__":
     #pass
     df = preprocess_data('/data/abalone.data')
