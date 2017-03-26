@@ -245,4 +245,4 @@ def weighted_majority(neighbours,
 
 if __name__ == "__main__":
     #pass
-    df = preprocess_data('/data/abalone.data')
+    df = preprocess_data('./data/abalone.data')
