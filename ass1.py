@@ -243,6 +243,52 @@ def weighted_majority(neighbours,
     
     return pred_class
 
+def precision(actual_classes, predicted_classes):
+    '''
+    Find the precision of the model
+    arguments:
+        actual_classes: list of classes of the actual value, supervised learning
+        prediced_classes: list of predicted classes, order as actual_classes
+    return:
+        dict:
+            key: class
+            value: float that represent the precision
+    '''
+    predicted_count = dd(int)
+    tp_count = dd(int)
+    length = len(actual_classes)
+    for i in range(length):
+        predicted_count[predicted_classes[i]] += 1
+        if(predicted_classes[i] == actual_classes[i]):
+            tp_count[predicted_classes[i]] += 1
+    result = {}
+    for label in predicted_count:
+        result[label] = tp_count[label] / predicted_count[label]
+    return result
+
+def recall(actual_classes, predicted_classes):
+    '''
+    Find the recall of the model
+    arguments:
+        actual_classes: list of classes of the actual value, supervised learning
+        prediced_classes: list of predicted classes, order as actual_classes
+    return:
+        dict:
+            key: class
+            value: float that represent the recall
+    '''
+    actual_count = dd(int)
+    tp_count = dd(int)
+    length = len(actual_classes)
+    for i in range(length):
+        actual_count[actual_classes[i]] += 1
+        if(predicted_classes[i] == actual_classes[i]):
+            tp_count[predicted_classes[i]] += 1
+    result = {}
+    for label in actual_count:
+        result[label] = tp_count[label] / actual_count[label]
+    return result
+
 if __name__ == "__main__":
     #pass
     df = preprocess_data('./data/abalone.data')
