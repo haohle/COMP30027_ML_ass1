@@ -277,7 +277,17 @@ def recall(actual_classes, predicted_classes):
             key: class
             value: float that represent the recall
     '''
-    pass
+    actual_count = dd(int)
+    tp_count = dd(int)
+    length = len(actual_classes)
+    for i in range(length):
+        actual_count[actual_classes[i]] += 1
+        if(predicted_classes[i] == actual_classes[i]):
+            tp_count[predicted_classes[i]] += 1
+    result = {}
+    for label in actual_count:
+        result[label] = tp_count[label] / actual_count[label]
+    return result
 
 if __name__ == "__main__":
     #pass
