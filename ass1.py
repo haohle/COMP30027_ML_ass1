@@ -266,6 +266,19 @@ def precision(actual_classes, predicted_classes):
         result[label] = tp_count[label] / predicted_count[label]
     return result
 
+def recall(actual_classes, predicted_classes):
+    '''
+    Find the recall of the model
+    arguments:
+        actual_classes: list of classes of the actual value, supervised learning
+        prediced_classes: list of predicted classes, order as actual_classes
+    return:
+        dict:
+            key: class
+            value: float that represent the recall
+    '''
+    pass
+
 if __name__ == "__main__":
     #pass
     df = preprocess_data('/data/abalone.data')
