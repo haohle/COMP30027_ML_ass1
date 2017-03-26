@@ -5,14 +5,14 @@ import csv
 from collections import defaultdict as dd
 
 HEADER = ["Sex",
-	"Length",
-	"Diameter",
-	"Height",
-	"Whole weight",
-	"Shucked weight",
-	"Viscera weight",
-	"Shell weight",
-	"Rings"]
+    "Length",
+    "Diameter",
+    "Height",
+    "Whole weight",
+    "Shucked weight",
+    "Viscera weight",
+    "Shell weight",
+    "Rings"]
 SEX2NUM = {
     "M": 1,
     "F": 2,
@@ -37,17 +37,17 @@ def preprocess_data(filename):
 def compare_instance(instance1, instance2, method):
     '''
     arguments:
-    	instance1: iterable, one of the instances to be compared
-    	instance2: iterable, another of the instances to be compared
-    	method: 
+        instance1: iterable, one of the instances to be compared
+        instance2: iterable, another of the instances to be compared
+        method: 
     returns: a score based on calculating the similarity (or distane) between
-    	two given instances according to the similarity (or distance) metric
-    	defined by the string method specify the values that method
+        two given instances according to the similarity (or distance) metric
+        defined by the string method specify the values that method
     '''
     method_func = globals().get(method)
     if not method_func:
-    	raise NotImplementedError(
-    		"Method {} not implemented".format(method))
+        raise NotImplementedError(
+            "Method {} not implemented".format(method))
     return method_func(instance1, instance2)
 
 def get_neighbours(instance, training_data_set, k, method):
@@ -101,11 +101,22 @@ def predict_class(neighbours, method):
     '''
     pass
 
-def evaluate(data_set, metric):
+def evaluate(data_set,
+        metric,
+        distance_method=euclidean_distance,
+        voting_method=majority_voting,
+        distance_weighting_method=None):
     '''
-    return the calculated value of the evaluation metric based on dividing the
-    given data set into training & test splits using your preferred evaluation
-    strategy
+    Evaluate the model by certain matric
+    arguments:
+        data_set: panda DataFrame, the data set
+        metric: string, could be "accuracy", "precision" and "recall"
+        distance_method: function to calculate similarity
+        voting_method: function that to predict class by different voting method
+        distance_weighting_method: use for weighted majority voting
+    return: the calculated value of the evaluation metric based on dividing the
+        given data set into training & test splits using your preferred
+        evaluation strategy
     '''
     pass
 
