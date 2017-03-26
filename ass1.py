@@ -58,7 +58,7 @@ def get_neighbours(instance, training_data_set, k, method):
     arguments:
         instance: the instance we are trying to classify
         training_data_set: data set which will be fed to the instance
-        method: the voting similarity (distance) methods used
+        method: str, the voting similarity (distance) methods used
     returns:
         list of (class, score) 2-tuples for each of the k best neighbours for
         the given instance
@@ -69,10 +69,17 @@ def get_neighbours(instance, training_data_set, k, method):
     # return neighbours.tolist()
 
     # list approach
+    method2func = {
+        "euclidean_distance": euclidean_distance,
+        "cosine_similarity": cosine_similarity,
+    }
+
+    method_func = method2func[method]
+
     raw = []
     for index, row in training_data_set.iterrows():
         temp_class = row['Rings']
-        temp_score = compare_instance(instance, row, method)
+        temp_score = compare_instance(instance, row, method_func)
         # fill up the list of classes and scores
         raw.append((temp_class, temp_score))
 
