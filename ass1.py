@@ -132,8 +132,12 @@ def euclidean_distance(instance1, instance2):
     '''
     # exclude the last item in the vector as it is the class
     instance1 = np.array((SEX2NUM[instance1[0]],) + instance1[1:-1])
-    instance1 = np.array((SEX2NUM[instance2[0]],) + instance2[1:-1])
-    return np.linalg.norm(instance1 - instance2)
+    instance2 = np.array((SEX2NUM[instance2[0]],) + instance2[1:-1])
+
+    s = 0
+    for i in range(len(instance1)):
+        s += (instance1[i] - instance2[i]) ** 2
+    return s ** 0.5
 
 def cosine_similarity(instance1, instance2):
     '''
