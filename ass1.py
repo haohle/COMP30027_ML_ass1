@@ -103,8 +103,8 @@ def predict_class(neighbours, method):
 
 def evaluate(data_set,
         metric,
-        distance_method=euclidean_distance,
-        voting_method=majority_voting,
+        distance_method=None,
+        voting_method=None,
         distance_weighting_method=None):
     '''
     Evaluate the model by certain matric
@@ -118,6 +118,10 @@ def evaluate(data_set,
         given data set into training & test splits using your preferred
         evaluation strategy
     '''
+    if distance_method is None:
+        distance_method = euclidean_distance
+    if voting_method is None:
+        voting_method = majority_voting
     pass
 
 def euclidean_distance(instance1, instance2):
