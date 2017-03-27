@@ -323,10 +323,10 @@ def majority_voting(neighbours):
             of neighbours
     '''
     # only need the class labels, not the score for majority voting
-    # will therefore ignore the scores all together
+    # will therefore ignore the scores altogether
     classLabels = [i[0] for i in neighbours]
 
-    # as a draw will never occue if we only use odd values for k
+    # a draw will never occur if only odd values for k are used
     return max(set(classLabels), key=classLabels.count)
 
 def inverse_linear_distance(distances):
@@ -462,6 +462,26 @@ def recall(actual_classes, predicted_classes):
     for label in actual_count:
         result[label] = tp_count[label] / actual_count[label]
     return result
+
+def accuracy(actual_classes, predicted_classes):
+    '''
+    Find the classification accuracy of the model
+    accuracy = (total correct predictions) / (total classes)
+    arguments:
+        actual_classes: list of classes of the actual value, supervised learning
+        predicted_classes: list of predicted classes, order as actual_classes
+    return:
+        dict:
+            key: class
+            value: float that represents the precision
+    '''
+    total_classes = len(actual_classes)
+
+    for i in range(length):
+        if (predicted_classes[i] == actual_classes[i]):
+            correct_count += 1
+
+    return float(correct_count / total_classes)
 
 if __name__ == "__main__":
     #pass
