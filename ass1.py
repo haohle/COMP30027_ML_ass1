@@ -69,13 +69,13 @@ def get_neighbours(instance, training_data_set, k, method):
     # neighbours = np.zeros(shape=[k, 2]) # creates an array of k by 2 can also use np.empty
     # will need to convert neighbours back into a list before returning
     # return neighbours.tolist()
-
-    # list approach
+    
     method2func = {
         "euclidean_distance": euclidean_distance,
         "cosine_similarity": cosine_similarity,
     }
 
+    # list approach
     method_func = method2func[method]
     
     raw = []
@@ -97,11 +97,19 @@ def predict_class(neighbours, method):
     arguments:
         neighbours: list of (class, score) 2-tuples for each of the best
                     neighbours for the given instance
-        method: voting method to predict the class of the given instance
+        method: str, voting method to predict the class of the given instance
     returns:
         a predicted class label
     '''
-    pass
+    if method == "majority_voting":
+        return majority_voting(neighbours)
+    if method == "weighted_majority_ild":
+        return weighted_majority(neighbours,
+            distance_weighting_method=inverse_linear_distance)
+    if method == "weighted_majority_id":
+        return weighted_majority(neighbours,
+            distance_weighting_method=inverse_distance,
+            0.5)
 
 def evaluate(data_set,
         metric,
