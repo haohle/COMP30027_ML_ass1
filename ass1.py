@@ -131,8 +131,8 @@ def euclidean_distance(instance1, instance2):
     returned: the euclidean distance between the vector of instance 1 and 2
     '''
     # exclude the last item in the vector as it is the class
-    instance1 = np.array((SEX2NUM[instance1[0]],) + instance1[1:-1])
-    instance2 = np.array((SEX2NUM[instance2[0]],) + instance2[1:-1])
+    instance1 = (SEX2NUM[instance1[0]],) + instance1[1:-1]
+    instance2 = (SEX2NUM[instance2[0]],) + instance2[1:-1]
 
     s = 0
     for i in range(len(instance1)):
