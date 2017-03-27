@@ -472,7 +472,7 @@ def accuracy(actual_classes, predicted_classes):
         if (predicted_classes[i] == actual_classes[i]):
             correct_count += 1
 
-    return correct_count / total_classes
+    return float(correct_count / total_classes)
 
 if __name__ == "__main__":
     #pass
