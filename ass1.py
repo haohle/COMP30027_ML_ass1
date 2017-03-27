@@ -314,10 +314,10 @@ def majority_voting(neighbours):
             of neighbours
     '''
     # only need the class labels, not the score for majority voting
-    # will therefore ignore the scores all together
+    # will therefore ignore the scores altogether
     classLabels = [i[0] for i in neighbours]
 
-    # as a draw will never occue if we only use odd values for k
+    # a draw will never occur if only odd values for k are used
     return max(set(classLabels), key=classLabels.count)
 
 def inverse_linear_distance(distances):
