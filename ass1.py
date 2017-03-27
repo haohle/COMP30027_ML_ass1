@@ -19,7 +19,7 @@ SEX2NUM = {
     "I": 3,
 }
 
-M_FOLD = 2
+M_FOLD = 10
 K_NEIGHBOURS = 29
 
 def preprocess_data(filename):
@@ -80,7 +80,7 @@ def get_neighbours(instance, training_data_set, k, method):
     # will sort them from shortest to longest distance then return a list of up to k items
     # the sorting part will probably take a while (not even sure what sorting algorithm is used)
     # might be best to use a heap instead and continuously update the top k items
-    result = sorted(raw, key=lambda item: item[-1], reverse=True)[:k]
+    result = sorted(raw, key=lambda item: item[-1])[:k]
     return result
 
 def predict_class(neighbours, method):
