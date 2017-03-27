@@ -114,16 +114,17 @@ def predict_class(neighbours, method):
 def evaluate(data_set,
         metric,
         distance_method="euclidean_distance",
-        voting_method="majority_voting",
-        distance_weighting_method=None):
+        voting_method="majority_voting"):
     '''
     Evaluate the model by certain matric
     arguments:
         data_set: panda DataFrame, the data set
         metric: string, could be "accuracy", "precision" and "recall"
         distance_method: function to calculate similarity
+            could be "euclidean_distance", "cosine_similarity"
         voting_method: function that to predict class by different voting method
-        distance_weighting_method: use for weighted majority voting
+            could be "majority_voting", "weighted_majority_ild",
+                "weighted_majority_id"
     return: the calculated value of the evaluation metric based on dividing the
         given data set into training & test splits using your preferred
         evaluation strategy
@@ -156,7 +157,7 @@ def evaluate(data_set,
                 distance_method)
             actual_classes.append(instance['Rings'])
             predicted_classes.append(
-                predicted_classes(neighbours, voting_method))
+                predict_class(neighbours, voting_method))
 
     # evaluate the model
     metric2func = {
