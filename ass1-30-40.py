@@ -246,9 +246,9 @@ def inverse_linear_distance(distances):
     weights = []
     for distance in distances:
         if distance == d1:
-            weights.append(1)
+            weights.append((i, 1))
         else:
-            weights.append((dk - distance) / furthest_nearest_distance)
+            weights.append((i, (dk - dj) / furthest_nearest_distance))
 
     return weights
 
@@ -397,4 +397,6 @@ def class3(label):
     return "very-young"
 
 if __name__ == "__main__":
-    print(evaluate(preprocess_data('./data/abalone.data'), "accuracy", voting_method="weighted_majority_ild"))
+    for i in range(31, 41):
+        K_NEIGHBOURS = i
+        print(evaluate(preprocess_data('./data/abalone.data'), "accuracy"))
