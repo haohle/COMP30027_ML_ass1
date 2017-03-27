@@ -19,6 +19,8 @@ SEX2NUM = {
     "I": 3,
 }
 
+M_FOLD = 10
+K_NEIGHBOURS = 20
 
 def preprocess_data(filename):
     '''
@@ -75,7 +77,7 @@ def get_neighbours(instance, training_data_set, k, method):
     }
 
     method_func = method2func[method]
-
+    
     raw = []
     for index, row in training_data_set.iterrows():
         temp_class = row['Rings']
@@ -103,8 +105,8 @@ def predict_class(neighbours, method):
 
 def evaluate(data_set,
         metric,
-        distance_method=euclidean_distance,
-        voting_method=majority_voting,
+        distance_method="euclidean_distance",
+        voting_method="majority_voting",
         distance_weighting_method=None):
     '''
     Evaluate the model by certain matric
@@ -118,7 +120,43 @@ def evaluate(data_set,
         given data set into training & test splits using your preferred
         evaluation strategy
     '''
-    pass
+
+    # split data into M_FOLD sets
+    data_sets = [
+        data_set[i:i + len(data_set) // M_FOLD]
+        for i in range(0, len(data_set), len(data_set) // M_FOLD)]
+    data_sets[-1].extend(data_set[-len(data_set) % M_FOLD:])
+
+    # should use i-th as testing data
+    actual_classes = []
+    predicted_classes = []
+    for i in range(M_FOLD):
+        curr_training = []
+        for j in range(M_FOLD):
+            # if the data is not testing data, add to training data
+            if i != j:
+                curr_training.extend(data_sets[j])
+
+        # start training and testing
+        testing_data = data_sets[i]
+        
+        for instance in testing_data:
+            neighbours = get_neighbours(
+                instance,
+                curr_training,
+                K_NEIGHBOURS,
+                distance_method)
+            actual_classes.append(instance['Rings'])
+            predicted_classes.append(
+                predicted_classes(neighbours, voting_method))
+
+    # evaluate the model
+    metric2func = {
+        "accuracy": accuracy,
+        "precision": precision,
+        "recall": recall,
+    }
+    return metric2func[metric](actual_classes, predicted_classes)
 
 def euclidean_distance(instance1, instance2):
     '''
@@ -131,9 +169,13 @@ def euclidean_distance(instance1, instance2):
     returned: the euclidean distance between the vector of instance 1 and 2
     '''
     # exclude the last item in the vector as it is the class
-    instance1 = np.array((SEX2NUM[instance1[0]],) + instance1[1:-1])
-    instance1 = np.array((SEX2NUM[instance2[0]],) + instance2[1:-1])
-    return np.linalg.norm(instance1 - instance2)
+    instance1 = (SEX2NUM[instance1[0]],) + instance1[1:-1]
+    instance2 = (SEX2NUM[instance2[0]],) + instance2[1:-1]
+
+    s = 0
+    for i in range(len(instance1)):
+        s += (instance1[i] - instance2[i]) ** 2
+    return s ** 0.5
 
 def cosine_similarity(instance1, instance2):
     '''
@@ -145,10 +187,122 @@ def cosine_similarity(instance1, instance2):
     return: the cosine of the angle between the vector of instance 1 and 2
     '''
     # exclude the last item in the vector as it is the class
-    instance1 = np.array((SEX2NUM[instance1[0]],) + instance1[1:-1])
-    instance2 = np.array((SEX2NUM[instance2[0]],) + instance2[1:-1])
-    return np.dot(instance1, instance2) / \
-        (np.linalg.norm(instance1) * np.linalg.norm(instance2))
+    instance1 = (SEX2NUM[instance1[0]],) + instance1[1:-1]
+    instance2 = (SEX2NUM[instance2[0]],) + instance2[1:-1]
+    sqlength1 = 0
+    sqlength2 = 0
+    numerator = 0
+    for i in range(len(instance1)):
+        numerator += instance1[i] * instance2[i]
+        sqlength1 += instance1[i] ** 2
+        sqlength2 += instance2[i] ** 2
+    # ** 0.5 is sqrt
+    denominator = (sqlength1 ** 0.5) * (sqlength1 ** 0.5)
+    return numerator / denominator
+
+def majority_voting(neighbours):
+    '''
+    Calculates the majority (if any) of classes from the given neighbours
+    arguments:
+        neighbours: is a list of (class, scores) 2-tuples. only need to make
+                    use of class for this voting method
+    return: a string with the class name for the majority found in the list
+            of neighbours
+    '''
+    # only need the class labels, not the score for majority voting
+    # will therefore ignore the scores all together
+    classLabels = [i[0] for i in neighbours]
+
+    # as a draw will never occue if we only use odd values for k
+    return max(set(classLabels), key=classLabels.count)
+
+def inverse_linear_distance(distances):
+    '''
+    This is a method for weighted_majority
+    arguments:
+        distances: all the distances from the test instance
+    return: a list of weights, same order as distances
+    '''
+    # avoid empty list to crash the program
+    if not distances:
+        return []
+
+    # finding d1 and dk,
+    # d1 is the nearest distance, initialised to very far
+    # dk is the furthest distance, initialised to negative
+    d1 = float('Inf')
+    dk = -float('Inf')
+    for distance in distances:
+        if distance < d1:
+            d1 = distance
+        if distance > dk:
+            dk = distance
+
+    # difference between the furthest and nearest
+    # if differnce is 0, will assume that is equal weight,
+    # just return all 1s, cause need to avoid divide by 0 error
+    furthest_nearest_distance = dk - d1
+    if furthest_nearest_distance == 0:
+        return [1 for i in range(len(distances))]
+
+    # find the actual weights
+    weights = []
+    for distance in distances:
+        if distance == d1:
+            weights.append((i, 1))
+        else:
+            weights.append((i, (dk - dj) / furthest_nearest_distance))
+
+    return weights
+
+def inverse_distance(distances, epsilon=0.5):
+    '''
+    This is a method for weighted_majority
+    arguments:
+        distances: all the distances from the test instance
+        epsilon: default to 0.5, an offset to denominator
+    return: a list of weights, same order as distances
+    '''
+    return [1 / (distance + epsilon) for distance in distances]
+
+def weighted_majority(neighbours,
+        distance_weighting_method=inverse_distance,
+        epsilon=0.5):
+    '''
+    Find the weighted majority
+    This function support different distance weighting method
+    arguments:
+        neighbours: the list of nearest neighbours
+        distance_method: the function that calculate the distance
+        distance_weighting_method: the method for weighting the distance
+        epsilon: mainly just for inverse_distance
+    return: the predicted class base on weighted majority
+    '''
+    # just distances of all neighbours,
+    # just not to less the weighting function to mess up the data
+    distances = \
+        [distance for instance, distance in neighbours]
+
+    # finding the weights
+    if distance_weighting_method == inverse_distance:
+        weights = distance_weighting_method(distances, epsilon)
+    else:
+        weights = distance_weighting_method(distances)
+    
+    # start counting up for classes now
+    class_counts = dd(float)
+    for i in range(len(neighbours)):
+        class_counts[neighbours[i][0]] += weights[i]
+
+    # after counting up, find the most counted class
+    max_count = -1
+    pred_class = None
+    for label, count in class_counts.items():
+        if count > max_count:
+            max_count = count
+            pred_class = label
+    
+    return pred_class
 
 def majority_voting(neighbours):
     '''
