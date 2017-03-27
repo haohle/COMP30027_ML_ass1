@@ -37,7 +37,7 @@ def preprocess_data(filename):
             items = [row[0]]
             for i in range(1, len(row) - 1):
                 items.append(float(row[i]))
-            items.append(row[-1])
+            items.append(int(row[-1]))
             df.append(items)
 
     return df
