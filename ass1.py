@@ -105,13 +105,8 @@ def predict_class(neighbours, method):
 
 def evaluate(data_set,
         metric,
-<<<<<<< HEAD
         distance_method="euclidean_distance",
         voting_method="majority_voting",
-=======
-        distance_method=None,
-        voting_method=None,
->>>>>>> master
         distance_weighting_method=None):
     '''
     Evaluate the model by certain matric
@@ -125,7 +120,6 @@ def evaluate(data_set,
         given data set into training & test splits using your preferred
         evaluation strategy
     '''
-<<<<<<< HEAD
 
     # split data into M_FOLD sets
     data_sets = [
@@ -163,13 +157,6 @@ def evaluate(data_set,
         "recall": recall,
     }
     return metric2func[metric](actual_classes, predicted_classes)
-=======
-    if distance_method is None:
-        distance_method = euclidean_distance
-    if voting_method is None:
-        voting_method = majority_voting
-    pass
->>>>>>> master
 
 def euclidean_distance(instance1, instance2):
     '''
