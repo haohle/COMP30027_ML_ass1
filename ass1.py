@@ -50,7 +50,8 @@ def compare_instance(instance1, instance2, method):
     if not method_func:
         raise NotImplementedError(
             "Method {} not implemented".format(method))
-    return method_func(instance1, instance2)
+    result = method_func(instance1, instance2)
+    return result
 
 def get_neighbours(instance, training_data_set, k, method):
     '''
@@ -134,7 +135,6 @@ def evaluate(data_set,
     actual_classes = []
     predicted_classes = []
     for i in range(M_FOLD):
-        print("start {}-fold".format(i))
         curr_training = pd.DataFrame()
         for j in range(M_FOLD):
             # if the data is not testing data, add to training data
@@ -145,7 +145,6 @@ def evaluate(data_set,
         # start training and testing
         testing_data = data_sets[i]
         
-        print("this fold has {} instances".format(len(testing_data)))
         for index, instance in testing_data.iterrows():
             neighbours = get_neighbours(
                 instance,
@@ -155,8 +154,6 @@ def evaluate(data_set,
             actual_classes.append(instance['Rings'])
             predicted_classes.append(
                 predict_class(neighbours, voting_method))
-            print("{} is predicted as {}, actual is {}".format(index, predicted_classes[-1], actual_classes[-1]))
-        print("end {}-fold".format(i))
 
     # evaluate the model
     metric2func = {
@@ -166,6 +163,7 @@ def evaluate(data_set,
     }
     return metric2func[metric](actual_classes, predicted_classes)
 
+@profile
 def euclidean_distance(instance1, instance2):
     '''
     Find the similarity (distance) by using euclidean distance.
@@ -176,12 +174,8 @@ def euclidean_distance(instance1, instance2):
         instance2: iterable, another of the instances to be comapred
     returned: the euclidean distance between the vector of instance 1 and 2
     '''
-    # exclude the last item in the vector as it is the class
-    instance1 = (SEX2NUM[instance1[0]],) + instance1[1:-1]
-    instance2 = (SEX2NUM[instance2[0]],) + instance2[1:-1]
-
-    s = 0
-    for i in range(len(instance1)):
+    s = (SEX2NUM[instance1[0]] - SEX2NUM[instance2[0]]) ** 2
+    for i in range(1, len(instance1) - 1):
         s += (instance1[i] - instance2[i]) ** 2
     return s ** 0.5
 
@@ -195,12 +189,10 @@ def cosine_similarity(instance1, instance2):
     return: the cosine of the angle between the vector of instance 1 and 2
     '''
     # exclude the last item in the vector as it is the class
-    instance1 = (SEX2NUM[instance1[0]],) + instance1[1:-1]
-    instance2 = (SEX2NUM[instance2[0]],) + instance2[1:-1]
-    sqlength1 = 0
-    sqlength2 = 0
-    numerator = 0
-    for i in range(len(instance1)):
+    sqlength1 = SEX2NUM[instance1[0]] ** 2
+    sqlength2 = SEX2NUM[instance2[0]] ** 2
+    numerator = SEX2NUM[instance1[0]] * SEX2NUM[instance2[0]]
+    for i in range(1, len(instance1) - 1):
         numerator += instance1[i] * instance2[i]
         sqlength1 += instance1[i] ** 2
         sqlength2 += instance2[i] ** 2
