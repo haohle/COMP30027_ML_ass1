@@ -208,22 +208,6 @@ def cosine_similarity(instance1, instance2):
     denominator = (sqlength1 ** 0.5) * (sqlength1 ** 0.5)
     return numerator / denominator
 
-def majority_voting(neighbours):
-    '''
-    Calculates the majority (if any) of classes from the given neighbours
-    arguments:
-        neighbours: is a list of (class, scores) 2-tuples. only need to make
-                    use of class for this voting method
-    return: a string with the class name for the majority found in the list
-            of neighbours
-    '''
-    # only need the class labels, not the score for majority voting
-    # will therefore ignore the scores all together
-    classLabels = [i[0] for i in neighbours]
-
-    # as a draw will never occue if we only use odd values for k
-    return max(set(classLabels), key=classLabels.count)
-
 def inverse_linear_distance(distances):
     '''
     This is a method for weighted_majority
@@ -327,94 +311,6 @@ def majority_voting(neighbours):
 
     # a draw will never occur if only odd values for k are used
     return max(set(classLabels), key=classLabels.count)
-
-def inverse_linear_distance(distances):
-    '''
-    This is a method for weighted_majority
-    arguments:
-        distances: all the distances from the test instance
-    return: a list of weights, same order as distances
-    '''
-    # avoid empty list to crash the program
-    if not distances:
-        return []
-
-    # finding d1 and dk,
-    # d1 is the nearest distance, initialised to very far
-    # dk is the furthest distance, initialised to negative
-    d1 = float('Inf')
-    dk = -float('Inf')
-    for distance in distances:
-        if distance < d1:
-            d1 = distance
-        if distance > dk:
-            dk = distance
-
-    # difference between the furthest and nearest
-    # if differnce is 0, will assume that is equal weight,
-    # just return all 1s, cause need to avoid divide by 0 error
-    furthest_nearest_distance = dk - d1
-    if furthest_nearest_distance == 0:
-        return [1 for i in range(len(distances))]
-
-    # find the actual weights
-    weights = []
-    for distance in distances:
-        if distance == d1:
-            weights.append((i, 1))
-        else:
-            weights.append((i, (dk - dj) / furthest_nearest_distance))
-
-    return weights
-
-def inverse_distance(distances, epsilon=0.5):
-    '''
-    This is a method for weighted_majority
-    arguments:
-        distances: all the distances from the test instance
-        epsilon: default to 0.5, an offset to denominator
-    return: a list of weights, same order as distances
-    '''
-    return [1 / (distance + epsilon) for distance in distances]
-
-def weighted_majority(neighbours,
-        distance_weighting_method=inverse_distance,
-        epsilon=0.5):
-    '''
-    Find the weighted majority
-    This function support different distance weighting method
-    arguments:
-        neighbours: the list of nearest neighbours
-        distance_method: the function that calculate the distance
-        distance_weighting_method: the method for weighting the distance
-        epsilon: mainly just for inverse_distance
-    return: the predicted class base on weighted majority
-    '''
-    # just distances of all neighbours,
-    # just not to less the weighting function to mess up the data
-    distances = \
-        [distance for instance, distance in neighbours]
-
-    # finding the weights
-    if distance_weighting_method == inverse_distance:
-        weights = distance_weighting_method(distances, epsilon)
-    else:
-        weights = distance_weighting_method(distances)
-    
-    # start counting up for classes now
-    class_counts = dd(float)
-    for i in range(len(neighbours)):
-        class_counts[neighbours[i][0]] += weights[i]
-
-    # after counting up, find the most counted class
-    max_count = -1
-    pred_class = None
-    for label, count in class_counts.items():
-        if count > max_count:
-            max_count = count
-            pred_class = label
-    
-    return pred_class
 
 def precision(actual_classes, predicted_classes):
     '''
