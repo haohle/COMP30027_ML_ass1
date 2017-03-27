@@ -30,10 +30,6 @@ def preprocess_data(filename):
     '''
     print("Reading in: {}".format(filename))
 
-    '''raw = pd.read_csv(filename, names=HEADER)
-    raw.dropna(how='any')   # removes any instances with missing data (if any)
-
-    df = pd.DataFrame(raw)  # converts the raw csv into a dataframe'''
     df = []
     with open(filename) as csvfile:
         csv_reader = csv.reader(csvfile)
@@ -163,7 +159,6 @@ def evaluate(data_set,
             actual_classes.append(instance[-1])
             predicted_classes.append(
                 predict_class(neighbours, voting_method))
-            print("predicted = {}, actual = {}".format(predicted_classes[-1], actual_classes[-1]))
 
     # evaluate the model
     metric2func = {
@@ -374,7 +369,8 @@ def accuracy(actual_classes, predicted_classes):
     '''
     total_classes = len(actual_classes)
 
-    for i in range(length):
+    correct_count = 0
+    for i in range(total_classes):
         if (predicted_classes[i] == actual_classes[i]):
             correct_count += 1
 
