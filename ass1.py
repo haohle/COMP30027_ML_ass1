@@ -19,6 +19,8 @@ SEX2NUM = {
     "I": 3,
 }
 
+M_FOLD = 10
+K_NEIGHBOURS = 20
 
 def preprocess_data(filename):
     '''
@@ -103,8 +105,8 @@ def predict_class(neighbours, method):
 
 def evaluate(data_set,
         metric,
-        distance_method=None,
-        voting_method=None,
+        distance_method="euclidean_distance",
+        voting_method="majority_voting",
         distance_weighting_method=None):
     '''
     Evaluate the model by certain matric
@@ -118,11 +120,43 @@ def evaluate(data_set,
         given data set into training & test splits using your preferred
         evaluation strategy
     '''
-    if distance_method is None:
-        distance_method = euclidean_distance
-    if voting_method is None:
-        voting_method = majority_voting
-    pass
+
+    # split data into M_FOLD sets
+    data_sets = [
+        data_set[i:i + len(data_set) // M_FOLD]
+        for i in range(0, len(data_set), len(data_set) // M_FOLD)]
+    data_sets[-1].extend(data_set[-len(data_set) % M_FOLD:])
+
+    # should use i-th as testing data
+    actual_classes = []
+    predicted_classes = []
+    for i in range(M_FOLD):
+        curr_training = []
+        for j in range(M_FOLD):
+            # if the data is not testing data, add to training data
+            if i != j:
+                curr_training.extend(data_sets[j])
+
+        # start training and testing
+        testing_data = data_sets[i]
+        
+        for instance in testing_data:
+            neighbours = get_neighbours(
+                instance,
+                curr_training,
+                K_NEIGHBOURS,
+                distance_method)
+            actual_classes.append(instance['Rings'])
+            predicted_classes.append(
+                predicted_classes(neighbours, voting_method))
+
+    # evaluate the model
+    metric2func = {
+        "accuracy": accuracy,
+        "precision": precision,
+        "recall": recall,
+    }
+    return metric2func[metric](actual_classes, predicted_classes)
 
 def euclidean_distance(instance1, instance2):
     '''
@@ -269,52 +303,6 @@ def weighted_majority(neighbours,
             pred_class = label
     
     return pred_class
-
-def precision(actual_classes, predicted_classes):
-    '''
-    Find the precision of the model
-    arguments:
-        actual_classes: list of classes of the actual value, supervised learning
-        prediced_classes: list of predicted classes, order as actual_classes
-    return:
-        dict:
-            key: class
-            value: float that represent the precision
-    '''
-    predicted_count = dd(int)
-    tp_count = dd(int)
-    length = len(actual_classes)
-    for i in range(length):
-        predicted_count[predicted_classes[i]] += 1
-        if(predicted_classes[i] == actual_classes[i]):
-            tp_count[predicted_classes[i]] += 1
-    result = {}
-    for label in predicted_count:
-        result[label] = tp_count[label] / predicted_count[label]
-    return result
-
-def recall(actual_classes, predicted_classes):
-    '''
-    Find the recall of the model
-    arguments:
-        actual_classes: list of classes of the actual value, supervised learning
-        prediced_classes: list of predicted classes, order as actual_classes
-    return:
-        dict:
-            key: class
-            value: float that represent the recall
-    '''
-    actual_count = dd(int)
-    tp_count = dd(int)
-    length = len(actual_classes)
-    for i in range(length):
-        actual_count[actual_classes[i]] += 1
-        if(predicted_classes[i] == actual_classes[i]):
-            tp_count[predicted_classes[i]] += 1
-    result = {}
-    for label in actual_count:
-        result[label] = tp_count[label] / actual_count[label]
-    return result
 
 def majority_voting(neighbours):
     '''
