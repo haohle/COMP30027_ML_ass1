@@ -103,8 +103,8 @@ def predict_class(neighbours, method):
 
 def evaluate(data_set,
         metric,
-        distance_method=euclidean_distance,
-        voting_method=majority_voting,
+        distance_method=None,
+        voting_method=None,
         distance_weighting_method=None):
     '''
     Evaluate the model by certain matric
@@ -118,6 +118,10 @@ def evaluate(data_set,
         given data set into training & test splits using your preferred
         evaluation strategy
     '''
+    if distance_method is None:
+        distance_method = euclidean_distance
+    if voting_method is None:
+        voting_method = majority_voting
     pass
 
 def euclidean_distance(instance1, instance2):
@@ -131,9 +135,13 @@ def euclidean_distance(instance1, instance2):
     returned: the euclidean distance between the vector of instance 1 and 2
     '''
     # exclude the last item in the vector as it is the class
-    instance1 = np.array((SEX2NUM[instance1[0]],) + instance1[1:-1])
-    instance1 = np.array((SEX2NUM[instance2[0]],) + instance2[1:-1])
-    return np.linalg.norm(instance1 - instance2)
+    instance1 = (SEX2NUM[instance1[0]],) + instance1[1:-1]
+    instance2 = (SEX2NUM[instance2[0]],) + instance2[1:-1]
+
+    s = 0
+    for i in range(len(instance1)):
+        s += (instance1[i] - instance2[i]) ** 2
+    return s ** 0.5
 
 def cosine_similarity(instance1, instance2):
     '''
