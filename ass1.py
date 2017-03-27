@@ -19,8 +19,8 @@ SEX2NUM = {
     "I": 3,
 }
 
-M_FOLD = 10
-K_NEIGHBOURS = 20
+M_FOLD = 2
+K_NEIGHBOURS = 29
 
 def preprocess_data(filename):
     '''
@@ -70,25 +70,18 @@ def get_neighbours(instance, training_data_set, k, method):
     # will need to convert neighbours back into a list before returning
     # return neighbours.tolist()
     
-    method2func = {
-        "euclidean_distance": euclidean_distance,
-        "cosine_similarity": cosine_similarity,
-    }
-
-    # list approach
-    method_func = method2func[method]
-    
     raw = []
     for index, row in training_data_set.iterrows():
         temp_class = row['Rings']
-        temp_score = compare_instance(instance, row, method_func)
+        temp_score = compare_instance(instance, row, method)
         # fill up the list of classes and scores
         raw.append((temp_class, temp_score))
 
     # will sort them from shortest to longest distance then return a list of up to k items
     # the sorting part will probably take a while (not even sure what sorting algorithm is used)
     # might be best to use a heap instead and continuously update the top k items
-    return sorted(raw)[:k]
+    result = sorted(raw, key=lambda item: item[-1], reverse=True)[:k]
+    return result
 
 def predict_class(neighbours, method):
     '''
@@ -109,7 +102,7 @@ def predict_class(neighbours, method):
     if method == "weighted_majority_id":
         return weighted_majority(neighbours,
             distance_weighting_method=inverse_distance,
-            0.5)
+            epsilon=0.5)
 
 def evaluate(data_set,
         metric,
@@ -130,26 +123,30 @@ def evaluate(data_set,
         evaluation strategy
     '''
 
+    data_set = data_set.sample(frac=1)
     # split data into M_FOLD sets
     data_sets = [
         data_set[i:i + len(data_set) // M_FOLD]
         for i in range(0, len(data_set), len(data_set) // M_FOLD)]
-    data_sets[-1].extend(data_set[-len(data_set) % M_FOLD:])
+    data_sets[-1] = data_sets[-1] + data_set[-len(data_set) % M_FOLD:]
 
     # should use i-th as testing data
     actual_classes = []
     predicted_classes = []
     for i in range(M_FOLD):
-        curr_training = []
+        print("start {}-fold".format(i))
+        curr_training = pd.DataFrame()
         for j in range(M_FOLD):
             # if the data is not testing data, add to training data
             if i != j:
-                curr_training.extend(data_sets[j])
+                frames = [curr_training, data_sets[j]]
+                curr_training = pd.concat(frames)
 
         # start training and testing
         testing_data = data_sets[i]
         
-        for instance in testing_data:
+        print("this fold has {} instances".format(len(testing_data)))
+        for index, instance in testing_data.iterrows():
             neighbours = get_neighbours(
                 instance,
                 curr_training,
@@ -158,6 +155,8 @@ def evaluate(data_set,
             actual_classes.append(instance['Rings'])
             predicted_classes.append(
                 predict_class(neighbours, voting_method))
+            print("{} is predicted as {}, actual is {}".format(index, predicted_classes[-1], actual_classes[-1]))
+        print("end {}-fold".format(i))
 
     # evaluate the model
     metric2func = {
@@ -485,4 +484,4 @@ def accuracy(actual_classes, predicted_classes):
 
 if __name__ == "__main__":
     #pass
-    df = preprocess_data('./data/abalone.data')
+    print(evaluate(preprocess_data('./data/abalone.data'), "accuracy"))
