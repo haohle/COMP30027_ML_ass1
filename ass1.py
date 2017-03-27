@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import csv
 from collections import defaultdict as dd
+from random import shuffle
 
 HEADER = ["Sex",
     "Length",
@@ -29,10 +30,19 @@ def preprocess_data(filename):
     '''
     print("Reading in: {}".format(filename))
 
-    raw = pd.read_csv(filename, names=HEADER)
+    '''raw = pd.read_csv(filename, names=HEADER)
     raw.dropna(how='any')   # removes any instances with missing data (if any)
 
-    df = pd.DataFrame(raw)  # converts the raw csv into a dataframe
+    df = pd.DataFrame(raw)  # converts the raw csv into a dataframe'''
+    df = []
+    with open(filename) as csvfile:
+        csv_reader = csv.reader(csvfile)
+        for row in csv_reader:
+            items = [row[0]]
+            for i in range(1, len(row) - 1):
+                items.append(float(row[i]))
+            items.append(row[-1])
+            df.append(items)
 
     return df
 
@@ -72,8 +82,8 @@ def get_neighbours(instance, training_data_set, k, method):
     # return neighbours.tolist()
     
     raw = []
-    for index, row in training_data_set.iterrows():
-        temp_class = row['Rings']
+    for row in training_data_set:
+        temp_class = row[-1]
         temp_score = compare_instance(instance, row, method)
         # fill up the list of classes and scores
         raw.append((temp_class, temp_score))
@@ -124,7 +134,7 @@ def evaluate(data_set,
         evaluation strategy
     '''
 
-    data_set = data_set.sample(frac=1)
+    shuffle(data_set)
     # split data into M_FOLD sets
     data_sets = [
         data_set[i:i + len(data_set) // M_FOLD]
@@ -135,25 +145,25 @@ def evaluate(data_set,
     actual_classes = []
     predicted_classes = []
     for i in range(M_FOLD):
-        curr_training = pd.DataFrame()
+        curr_training = []
         for j in range(M_FOLD):
             # if the data is not testing data, add to training data
             if i != j:
-                frames = [curr_training, data_sets[j]]
-                curr_training = pd.concat(frames)
+                curr_training.extend(data_sets[j])
 
         # start training and testing
         testing_data = data_sets[i]
         
-        for index, instance in testing_data.iterrows():
+        for instance in testing_data:
             neighbours = get_neighbours(
                 instance,
                 curr_training,
                 K_NEIGHBOURS,
                 distance_method)
-            actual_classes.append(instance['Rings'])
+            actual_classes.append(instance[-1])
             predicted_classes.append(
                 predict_class(neighbours, voting_method))
+            print("predicted = {}, actual = {}".format(predicted_classes[-1], actual_classes[-1]))
 
     # evaluate the model
     metric2func = {
@@ -163,7 +173,7 @@ def evaluate(data_set,
     }
     return metric2func[metric](actual_classes, predicted_classes)
 
-@profile
+#@profile
 def euclidean_distance(instance1, instance2):
     '''
     Find the similarity (distance) by using euclidean distance.
