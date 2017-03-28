@@ -64,9 +64,13 @@ SEX2NUM = {
 }
 
 M_FOLD = 10
-K_NEIGHBOURS = 39
 OLD_AGE = 11
 MIDDLE_AGE = 9
+
+# parameters that we suggest
+K_NEIGHBOURS = 39
+DISTANCE = "manhattan_distance"
+VOTING = "weighted_majority_ild"
 
 def preprocess_data(filename, classification="2-class"):
     '''
@@ -168,8 +172,8 @@ def predict_class(neighbours, method):
 def evaluate(data_set,
         metric,
         k_neighbours=K_NEIGHBOURS,
-        distance_method="euclidean_distance",
-        voting_method="majority_voting"):
+        distance_method=DISTANCE,
+        voting_method=VOTING):
     '''
     Evaluate the model by certain matric
     arguments:
@@ -184,6 +188,10 @@ def evaluate(data_set,
         given data set into training & test splits using your preferred
         evaluation strategy
     '''
+
+    print("Eval metric = " + metric)
+    print("Similarity metric = " + distance_method)
+    print("Voting method = " + voting_method)
 
     shuffle(data_set)
     # split data into M_FOLD sets
@@ -462,12 +470,20 @@ def class3(label):
 
 if __name__ == "__main__":
     evaluation = "accuracy"
-    similarity = "euclidean_distance"
-    voting = "majority_voting"
+
     classification = "2-class"
 
-    print("Eval metric = " + evaluation)
-    print("Similarity metric = " + similarity)
-    print("Voting method = " + voting)
+    # comment out is the way that change the model
+    # similarity can be
+    #    "euclidean_distance" | "manhattan_distance" | "cosine_similarity"
+    # voting can be
+    #    "majority_vold" | "weighted_majority_id" | "weighted_majority_ild"
+    '''similarity = "manhattan_distance"
+    voting = "weighted_majority_ild"
 
-    print(evaluate(preprocess_data('./data/abalone.data', classification), evaluation, K_NEIGHBOURS, similarity, voting))
+    print(evaluate(
+        preprocess_data('./data/abalone.data', classification),
+        evaluation, K_NEIGHBOURS, similarity, voting))'''
+    
+    # calling the evaluate according to the requirement
+    print(evaluate(preprocess_data('./data/abalone.data'), evaluation))
