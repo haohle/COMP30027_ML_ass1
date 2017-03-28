@@ -2,52 +2,6 @@ import csv
 from collections import defaultdict as dd
 from random import shuffle
 
-HEADER = ["Sex",
-    "Length",
-    "Diameter",
-    "Height",
-    "Whole weight",
-    "Shucked weight",
-    "Viscera weight",
-    "Shell weight",
-    "Rings"]
-MIN = [
-    0.075,
-    0.055,
-    0.000,
-    0.002,
-    0.001,
-    0.001,
-    0.002,
-]
-MAX = [
-    0.815,
-    0.650,
-    1.130,
-    2.826,
-    1.488,
-    0.760,
-    1.005,
-]
-MEAN = [
-    0.524,
-    0.408,
-    0.140,
-    0.829,
-    0.359,
-    0.181,
-    0.239,
-]
-SD = [
-    0.120,
-    0.099,
-    0.042,
-    0.490,
-    0.222,
-    0.110,
-    0.139,
-    3.224
-]
 CORREL = [
     0.557,
     0.575,
@@ -76,8 +30,12 @@ def preprocess_data(filename, classification="2-class"):
     '''
     opens the file given by String 'filename' returns a dataset
     (with suitable class labels) made up of instances of the file, 1 per line
+    arguments:
+        filename: name of the file being read
+        classification: whether a 2-class or 3-class should be adopted
+    returns:
+        all the instances in the data set as an array
     '''
-
     # need to translate into label from here, therefore, function to translate
     class2func = {
         "2-class": class2,
@@ -129,7 +87,6 @@ def get_neighbours(instance, training_data_set, k, method):
         list of (class, score) 2-tuples for each of the k best neighbours for
         the given instance
     '''
-    
     raw = []
     for row in training_data_set:
         temp_class = row[-1]
@@ -173,6 +130,7 @@ def evaluate(data_set,
     arguments:
         data_set: panda DataFrame, the data set
         metric: string, could be "accuracy", "precision" and "recall"
+        k_neighbours: number of neighbours to consider
         distance_method: function to calculate similarity
             could be "euclidean_distance", "cosine_similarity"
         voting_method: function that to predict class by different voting method
@@ -182,7 +140,6 @@ def evaluate(data_set,
         given data set into training & test splits using your preferred
         evaluation strategy
     '''
-
     print("Eval metric = " + metric)
     print("Similarity metric = " + distance_method)
     print("Voting method = " + voting_method)
@@ -460,21 +417,32 @@ def class3(label):
     return "very-young"
 
 if __name__ == "__main__":
-    evaluation = "accuracy"
-
-    classification = "2-class"
-
-    # comment out is the way that change the model
+    # each metric can be changed here to produce different results
+    # there are already default recommended metrics to be used
+    # (currently implemented)
+    #
+    # classification can be
+    #    "2-class" | "3-class"
     # similarity can be
     #    "euclidean_distance" | "manhattan_distance" | "cosine_similarity"
     # voting can be
-    #    "majority_vold" | "weighted_majority_id" | "weighted_majority_ild"
-    '''similarity = "manhattan_distance"
-    voting = "weighted_majority_ild"
+    #    "majority_voting" | "weighted_majority_id" | "weighted_majority_ild"
+    # evaluation can be
+    #    "accuracy" | "precision" | "recall"
+    #
+    # an example is shown below
+    '''
+    classification = "3-class"
+    similarity = "euclidean_distance"
+    voting = "majority_voting"
+    evaluation = "precision"
 
     print(evaluate(
         preprocess_data('./data/abalone.data', classification),
-        evaluation, K_NEIGHBOURS, similarity, voting))'''
-    
+        evaluation, K_NEIGHBOURS, similarity, voting))
+    '''
+
+    evaluation = "accuracy"
+
     # calling the evaluate according to the requirement
     print(evaluate(preprocess_data('./data/abalone.data'), evaluation))
