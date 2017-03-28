@@ -21,7 +21,7 @@ SEX2NUM = {
 }
 
 M_FOLD = 10
-K_NEIGHBOURS = 29
+K_NEIGHBOURS = 10
 OLD_AGE = 11
 MIDDLE_AGE = 9
 
@@ -192,6 +192,21 @@ def euclidean_distance(instance1, instance2):
     for i in range(1, len(instance1) - 1):
         s += (instance1[i] - instance2[i]) ** 2
     return s ** 0.5
+
+def manhattan_distance(instance1, instance2):
+    '''
+    Find the similarity (distance) by using manhattan distance.
+    Nominal data will be assigned to 1, 2, 3 (this is prevalent for the Sex 
+    attribute).
+    arguments:
+        instance1: iterable, one of the instances to be compared
+        instance2: iterable, another of the instances to be comapred
+    returned: the euclidean distance between the vector of instance 1 and 2
+    '''
+    s = abs(SEX2NUM[instance1[0]] - SEX2NUM[instance2[0]])
+    for i in range(1, len(instance1) - 1):
+        s += abs(instance1[i] - instance2[i])
+    return s
 
 def cosine_similarity(instance1, instance2):
     '''
