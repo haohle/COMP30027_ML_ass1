@@ -4,14 +4,6 @@ import matplotlib.pyplot as plt
 import csv
 from collections import defaultdict as dd
 from random import shuffle
-import threading
-import os
-
-# find number of cores we can use
-if 'sched_getaffinity' in dir(os):
-    NUM_CORES = len(os.sched_getaffinity(0)) if len(os.sched_getaffinity(0)) else 1
-else:
-    NUM_CORES = os.cpu_count()
 
 HEADER = ["Sex",
     "Length",
@@ -420,34 +412,6 @@ def class3(label):
         return "middle-age"
     return "very-young"
 
-def multithread_evaluate_worker(ks, evaluation, similarity, voting, classification, results):
-    for i, k in ks:
-        results[i] = evaluate(preprocess_data('./data/abalone.data'), evaluation, k, similarity, voting, classification)
-
-def multithread_evaluate(ks, evaluation, similarity, voting, classification):
-    tasks = [[] for i in range(NUM_CORES)]
-    currThread = 0
-    for i in range(len(ks)):
-        tasks[currThread].append((i, ks[i]))
-        currThread = (currThread + 1) % NUM_CORES
-
-    # list holding all the threads
-    ts = []
-    results = [None for i in range(len(ks))]
-    # creating threads and start the sum process
-    for i in range(NUM_CORES):
-        ts.append(threading.Thread(
-            target=multithread_evaluate_worker,
-            args=(tasks[i], evaluation, similarity, voting, classification, results)))
-        ts[i].start()
-
-    # wait for all threads to finish their sum
-    for i in range(NUM_CORES):
-        ts[i].join()
-
-    for result in results:
-        print(result)
-
 if __name__ == "__main__":
     evaluation = "accuracy"
     similarity = "cosine_similarity"
@@ -458,5 +422,4 @@ if __name__ == "__main__":
     print("Similarity metric = " + similarity)
     print("Voting method = " + voting)
 
-    #print(evaluate(preprocess_data('./data/abalone.data'), evaluation, k, similarity, voting, classification))
-    multithread_evaluate(range(50, 101), evaluation, similarity, voting, classification)
+    print(evaluate(preprocess_data('./data/abalone.data'), evaluation, k, similarity, voting, classification))
