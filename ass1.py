@@ -130,10 +130,6 @@ def get_neighbours(instance, training_data_set, k, method):
         list of (class, score) 2-tuples for each of the k best neighbours for
         the given instance
     '''
-    # array approach - ignore for now
-    # neighbours = np.zeros(shape=[k, 2]) # creates an array of k by 2 can also use np.empty
-    # will need to convert neighbours back into a list before returning
-    # return neighbours.tolist()
     
     raw = []
     for row in training_data_set:
@@ -142,9 +138,8 @@ def get_neighbours(instance, training_data_set, k, method):
         # fill up the list of classes and scores
         raw.append((temp_class, temp_score))
 
-    # will sort them from shortest to longest distance then return a list of up to k items
-    # the sorting part will probably take a while (not even sure what sorting algorithm is used)
-    # might be best to use a heap instead and continuously update the top k items
+    # will sort them from shortest to longest distance
+    # then return a list of up to k items
     result = sorted(raw, key=lambda item: item[-1])[:k]
     return result
 
