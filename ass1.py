@@ -1,6 +1,3 @@
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
 import csv
 from collections import defaultdict as dd
 from random import shuffle
@@ -71,11 +68,19 @@ K_NEIGHBOURS = 39
 OLD_AGE = 11
 MIDDLE_AGE = 9
 
-def preprocess_data(filename):
+def preprocess_data(filename, classification="2-class"):
     '''
     opens the file given by String 'filename' returns a dataset
     (with suitable class labels) made up of instances of the file, 1 per line
     '''
+
+    # need to translate into label from here, therefore, function to translate
+    class2func = {
+        "2-class": class2,
+        "3-class": class3,
+    }
+    class_func = class2func[classification]
+
     print("Reading in: {}".format(filename))
 
     df = []
@@ -86,7 +91,7 @@ def preprocess_data(filename):
             #items = []
             for i in range(1, len(row) - 1):
                 items.append(float(row[i]) * CORREL[i - 1])
-            items.append(class2(int(row[-1])))
+            items.append(class_func(int(row[-1])))
             df.append(items)
 
     return df
@@ -164,8 +169,7 @@ def evaluate(data_set,
         metric,
         k_neighbours=K_NEIGHBOURS,
         distance_method="euclidean_distance",
-        voting_method="majority_voting",
-        classification="2-class"):
+        voting_method="majority_voting"):
     '''
     Evaluate the model by certain matric
     arguments:
@@ -180,12 +184,6 @@ def evaluate(data_set,
         given data set into training & test splits using your preferred
         evaluation strategy
     '''
-
-    class2func = {
-        "2-class": class2,
-        "3-class": class3,
-    }
-    class_func = class2func[classification]
 
     shuffle(data_set)
     # split data into M_FOLD sets
@@ -213,9 +211,6 @@ def evaluate(data_set,
                 curr_training,
                 k_neighbours,
                 distance_method)
-            #actual_classes.append(class_func(instance[-1]))
-            #predicted_classes.append(class_func(
-            #    predict_class(neighbours, voting_method)))
             actual_classes.append(instance[-1])
             predicted_classes.append(
                 predict_class(neighbours, voting_method))
@@ -239,7 +234,6 @@ def euclidean_distance(instance1, instance2):
     returned: the euclidean distance between the vector of instance 1 and 2
     '''
     s = (SEX2NUM[instance1[0]] - SEX2NUM[instance2[0]]) ** 2
-    #s = 0
     for i in range(1, len(instance1) - 1):
         s += (instance1[i] - instance2[i]) ** 2
     return s ** 0.5
@@ -255,7 +249,6 @@ def manhattan_distance(instance1, instance2):
     returned: the euclidean distance between the vector of instance 1 and 2
     '''
     s = abs(SEX2NUM[instance1[0]] - SEX2NUM[instance2[0]])
-    #s = 0
     for i in range(1, len(instance1) - 1):
         s += abs(instance1[i] - instance2[i])
     return s
@@ -477,4 +470,4 @@ if __name__ == "__main__":
     print("Similarity metric = " + similarity)
     print("Voting method = " + voting)
 
-    print(evaluate(preprocess_data('./data/abalone.data'), evaluation, K_NEIGHBOURS, similarity, voting, classification))
+    print(evaluate(preprocess_data('./data/abalone.data', classification), evaluation, K_NEIGHBOURS, similarity, voting))
