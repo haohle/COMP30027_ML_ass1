@@ -32,6 +32,25 @@ MAX = [
     0.760,
     1.005,
 ]
+MEAN = [
+    0.524,
+    0.408,
+    0.140,
+    0.829,
+    0.359,
+    0.181,
+    0.239,
+]
+SD = [
+    0.120,
+    0.099,
+    0.042,
+    0.490,
+    0.222,
+    0.110,
+    0.139,
+    3.224
+]
 CORREL = [
     0.557,
     0.575,
@@ -66,8 +85,8 @@ def preprocess_data(filename):
             items = [row[0]]
             #items = []
             for i in range(1, len(row) - 1):
-                items.append(((float(row[i]) - MIN[i - 1]) / (MAX[i - 1] - MIN[i - 1])) * CORREL[i - 1])
-            items.append(int(row[-1]))
+                items.append(((float(row[i]) - MEAN[i - 1]) * SD[i - 1]) * CORREL[i - 1])
+            items.append(class2(int(row[-1])))
             df.append(items)
 
     return df
@@ -194,9 +213,12 @@ def evaluate(data_set,
                 curr_training,
                 k_neighbours,
                 distance_method)
-            actual_classes.append(class_func(instance[-1]))
-            predicted_classes.append(class_func(
-                predict_class(neighbours, voting_method)))
+            #actual_classes.append(class_func(instance[-1]))
+            #predicted_classes.append(class_func(
+            #    predict_class(neighbours, voting_method)))
+            actual_classes.append(instance[-1])
+            predicted_classes.append(
+                predict_class(neighbours, voting_method))
 
     # evaluate the model
     metric2func = {
@@ -455,5 +477,5 @@ if __name__ == "__main__":
     print("Similarity metric = " + similarity)
     print("Voting method = " + voting)
 
-    for k in range(1, 11):
+    for k in range(39, 42, 2):
         print(evaluate(preprocess_data('./data/abalone.data'), evaluation, k, similarity, voting, classification))
