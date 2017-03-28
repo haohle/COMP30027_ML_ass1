@@ -1,3 +1,13 @@
+'''
+COMP30027 - Machine Learning
+Project 1: K-Nearest Neighbour Classification
+
+Hao Hoang Le - 695540
+Shing Sheung Daniel Ip - 723508
+
+Last modified: 29th of March, 10:50 AM
+'''
+
 import csv
 from collections import defaultdict as dd
 from random import shuffle
