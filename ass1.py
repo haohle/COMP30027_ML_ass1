@@ -67,7 +67,7 @@ SEX2NUM = {
 }
 
 M_FOLD = 10
-K_NEIGHBOURS = 10
+K_NEIGHBOURS = 39
 OLD_AGE = 11
 MIDDLE_AGE = 9
 
@@ -85,7 +85,7 @@ def preprocess_data(filename):
             items = [row[0]]
             #items = []
             for i in range(1, len(row) - 1):
-                items.append(((float(row[i]) - MEAN[i - 1]) * SD[i - 1]) * CORREL[i - 1])
+                items.append(float(row[i]) * CORREL[i - 1])
             items.append(class2(int(row[-1])))
             df.append(items)
 
@@ -477,5 +477,4 @@ if __name__ == "__main__":
     print("Similarity metric = " + similarity)
     print("Voting method = " + voting)
 
-    for k in range(39, 42, 2):
-        print(evaluate(preprocess_data('./data/abalone.data'), evaluation, k, similarity, voting, classification))
+    print(evaluate(preprocess_data('./data/abalone.data'), evaluation, K_NEIGHBOURS, similarity, voting, classification))
