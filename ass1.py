@@ -92,7 +92,6 @@ def preprocess_data(filename, classification="2-class"):
         csv_reader = csv.reader(csvfile)
         for row in csv_reader:
             items = [row[0]]
-            #items = []
             for i in range(1, len(row) - 1):
                 items.append(float(row[i]) * CORREL[i - 1])
             items.append(class_func(int(row[-1])))
@@ -269,9 +268,6 @@ def cosine_similarity(instance1, instance2):
     sqlength1 = SEX2NUM[instance1[0]] ** 2
     sqlength2 = SEX2NUM[instance2[0]] ** 2
     numerator = SEX2NUM[instance1[0]] * SEX2NUM[instance2[0]]
-    #sqlength1 = 0
-    #sqlength2 = 0
-    #numerator = 0
     for i in range(1, len(instance1) - 1):
         numerator += instance1[i] * instance2[i]
         sqlength1 += instance1[i] ** 2
