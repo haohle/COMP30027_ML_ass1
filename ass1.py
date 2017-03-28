@@ -115,6 +115,7 @@ def predict_class(neighbours, method):
 
 def evaluate(data_set,
         metric,
+        k_neighbours,
         distance_method="euclidean_distance",
         voting_method="majority_voting",
         classification="2-class"):
@@ -163,7 +164,7 @@ def evaluate(data_set,
             neighbours = get_neighbours(
                 instance,
                 curr_training,
-                K_NEIGHBOURS,
+                k_neighbours,
                 distance_method)
             actual_classes.append(class_func(instance[-1]))
             predicted_classes.append(class_func(
@@ -397,4 +398,13 @@ def class3(label):
     return "very-young"
 
 if __name__ == "__main__":
-    print(evaluate(preprocess_data('./data/abalone.data'), "accuracy"))
+    evaluation = "accuracy"
+    similarity = "cosine_similarity"
+    voting = "majority_voting"
+    classification = "2-class"
+
+    print("Eval metric = " + evaluation)
+    print("Similarity metric = " + similarity)
+    print("Voting method = " + voting)
+
+    print(evaluate(preprocess_data('./data/abalone.data'), evaluation, k, similarity, voting, classification))
