@@ -32,6 +32,25 @@ MAX = [
     0.760,
     1.005,
 ]
+MEAN = [
+    0.524,
+    0.408,
+    0.140,
+    0.829,
+    0.359,
+    0.181,
+    0.239,
+]
+SD = [
+    0.120,
+    0.099,
+    0.042,
+    0.490,
+    0.222,
+    0.110,
+    0.139,
+    3.224
+]
 CORREL = [
     0.557,
     0.575,
@@ -66,7 +85,7 @@ def preprocess_data(filename):
             items = [row[0]]
             #items = []
             for i in range(1, len(row) - 1):
-                items.append(((float(row[i]) - MIN[i - 1]) / (MAX[i - 1] - MIN[i - 1])) * CORREL[i - 1])
+                items.append(((float(row[i]) - MEAN[i - 1]) * SD[i - 1]) * CORREL[i - 1])
             items.append(int(row[-1]))
             df.append(items)
 
