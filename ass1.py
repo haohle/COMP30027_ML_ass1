@@ -115,7 +115,7 @@ def predict_class(neighbours, method):
 
 def evaluate(data_set,
         metric,
-        k_neighbours,
+        k_neighbours=K_NEIGHBOURS,
         distance_method="euclidean_distance",
         voting_method="majority_voting",
         classification="2-class"):
