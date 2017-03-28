@@ -397,4 +397,4 @@ def class3(label):
     return "very-young"
 
 if __name__ == "__main__":
-    print(evaluate(preprocess_data('./data/abalone.data'), "accuracy", voting_method="weighted_majority_ild"))
+    print(evaluate(preprocess_data('./data/abalone.data'), "accuracy"))
